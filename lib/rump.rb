@@ -37,7 +37,7 @@ module Rump
     end
 
     def set_user
-      @user = /<[^\s]*>/.match(line_string)
+      @user = /<[\s]?[^\s]*>/.match(line_string)
     end
 
     def set_url
@@ -62,5 +62,5 @@ end
 
 get '/links/:logfile' do
   logfile = Inquisition.sanitize(params[:logfile],nil)
-  Rump.load_log("input/##{logfile}.log").map{|line|line.to_s}.join("<br/>")
+  Rump.load_log("input/##{logfile}.log").sort_by{|line|line.time}.reverse.map{|line|line.to_s}.join("<br/>")
 end
