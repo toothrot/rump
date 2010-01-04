@@ -62,5 +62,7 @@ end
 
 get '/links/:logfile' do
   logfile = Inquisition.sanitize(params[:logfile],nil)
-  Rump.load_log("input/##{logfile}.log").sort_by{|line|line.time}.reverse.map{|line|line.to_s}.join("<br/>")
+  Rump.load_log("input/##{logfile}.log").sort_by{|line|line.time}.reverse.map do |line|
+    %Q[#{line.time} #{line.user}: <a href="#{line.url}">#{line.url}</a><br/>]
+  end
 end
