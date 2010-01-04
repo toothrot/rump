@@ -18,7 +18,7 @@ module Rump
   end
 
   class Line
-    attr_accessor :line_string, :time, :url, :user
+    attr_accessor :line_string, :time, :title, :url, :user
 
     def initialize(line, date)
       @line_string = line
@@ -42,6 +42,12 @@ module Rump
 
     def set_url
       @url = /http[s]?[^\s]*/.match(line_string)
+      set_title
+    end
+
+    def set_title
+      @title = %r{::(.*)$}.match(line_string).to_a.last
+      @title = @url if title.nil? || title.strip.empty?
     end
   end
 
@@ -63,6 +69,6 @@ end
 get '/links/:logfile' do
   logfile = Inquisition.sanitize(params[:logfile],nil)
   Rump.load_log("input/##{logfile}.log").sort_by{|line|line.time}.reverse.map do |line|
-    %Q[#{line.time} #{line.user}: <a href="#{line.url}">#{line.url}</a><br/>]
+    %Q[#{line.time} #{line.user}: <a href="#{line.url}">#{line.title}</a><br/>]
   end
 end
